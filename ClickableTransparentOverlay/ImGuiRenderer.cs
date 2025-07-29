@@ -36,7 +36,7 @@
         int vertexBufferSize = 5000, indexBufferSize = 10000;
         readonly Dictionary<IntPtr, ID3D11ShaderResourceView> textureResources = new();
 
-        public ImGuiRenderer(ID3D11Device device, ID3D11DeviceContext deviceContext, int width, int height)
+        public ImGuiRenderer(ID3D11Device device, ID3D11DeviceContext deviceContext, uint width, uint height)
         {
             this.device = device;
             this.deviceContext = deviceContext;
@@ -78,7 +78,7 @@
 
                 vertexBufferSize = data.TotalVtxCount + 5000;
                 var desc = new BufferDescription(
-                    vertexBufferSize * sizeof(ImDrawVert),
+                    (uint)(vertexBufferSize * sizeof(ImDrawVert)),
                     BindFlags.VertexBuffer,
                     ResourceUsage.Dynamic,
                     CpuAccessFlags.Write);
@@ -92,7 +92,7 @@
                 indexBufferSize = data.TotalIdxCount + 10000;
 
                 var desc = new BufferDescription(
-                    indexBufferSize * sizeof(ImDrawIdx),
+                    (uint)(indexBufferSize * sizeof(ImDrawIdx)),
                     BindFlags.IndexBuffer,
                     ResourceUsage.Dynamic,
                     CpuAccessFlags.Write);
@@ -168,7 +168,7 @@
                             ctx.PSSetShaderResource(0, texture);
                         }
 
-                        ctx.DrawIndexed((int)cmd.ElemCount, (int)(cmd.IdxOffset + global_idx_offset), (int)(cmd.VtxOffset + global_vtx_offset));
+                        ctx.DrawIndexed((uint)cmd.ElemCount, (uint)(cmd.IdxOffset + global_idx_offset), (int)(cmd.VtxOffset + global_vtx_offset));
                     }
                 }
                 global_idx_offset += cmdList.IdxBuffer.Size;
@@ -198,9 +198,9 @@
             vertexShaderBlob?.Release();
         }
 
-        public void Resize(int width, int height)
+        public void Resize(uint width, int uheight)
         {
-            ImGui.GetIO().DisplaySize = new Vector2(width, height);
+            ImGui.GetIO().DisplaySize = new Vector2((int)width, (int)height);
         }
 
         public IntPtr CreateImageTexture(Image<Rgba32> image, Format format)
@@ -241,7 +241,7 @@
             ctx.RSSetViewport(viewport);
             int stride = sizeof(ImDrawVert);
             ctx.IASetInputLayout(inputLayout);
-            ctx.IASetVertexBuffer(0, vertexBuffer, stride);
+            ctx.IASetVertexBuffer(0, vertexBuffer, (uint)stride);
             ctx.IASetIndexBuffer(indexBuffer, sizeof(ImDrawIdx) == 2 ? Format.R16_UInt : Format.R32_UInt, 0);
             ctx.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
             ctx.VSSetShader(vertexShader);
@@ -262,7 +262,7 @@
         {
             var io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out var width, out var height);
-            var texDesc = new Texture2DDescription(Format.R8G8B8A8_UNorm, width, height, 1, 1);
+            var texDesc = new Texture2DDescription(Format.R8G8B8A8_UNorm, (uint)width, (uint)height, 1, 1);
             var subResource = new SubresourceData(pixels, texDesc.Width * 4);
             using var texture = device.CreateTexture2D(texDesc, new[] { subResource });
             var resViewDesc = new ShaderResourceViewDescription(
