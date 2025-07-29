@@ -1,25 +1,28 @@
-﻿namespace ClickableTransparentOverlay
+﻿using ClickableTransparentOverlay.Win32;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Vortice.DXGI;
+using Vortice.Mathematics;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
+using ImGuiNET;
+using System.Collections.Concurrent;
+using Windows.Win32;
+
+
+namespace ClickableTransparentOverlay
 {
-    using ClickableTransparentOverlay.Win32;
-    using SixLabors.ImageSharp;
-    using SixLabors.ImageSharp.PixelFormats;
-    using SixLabors.ImageSharp.Formats;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Vortice.Direct3D;
-    using Vortice.Direct3D11;
-    using Vortice.DXGI;
-    using Vortice.Mathematics;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
-    using ImGuiNET;
-    using System.Collections.Concurrent;
 
     /// <summary>
     /// A class to create clickable transparent overlay on windows machine.
@@ -48,7 +51,7 @@
         private ImGuiInputHandler inputhandler;
 
         private bool _disposedValue;
-        private IntPtr selfPointer;
+        private FreeLibrarySafeHandle selfPointer;
         private Thread renderThread;
         private volatile CancellationTokenSource cancellationTokenSource;
         private volatile bool overlayIsReady;
@@ -330,12 +333,12 @@
                 if (value == 0)
                 {
                     this.fpslimit = value;
-                    _ = Winmm.MM_EndPeriod(1);
+                    _ = PInvoke.timeEndPeriod(1);
                 }
                 else if (value > 0)
                 {
                     this.fpslimit = value;
-                    _ = Winmm.MM_BeginPeriod(1);
+                    _ = PInvoke.timeBeginPeriod(1);
                 }
                 else
                 {
@@ -496,14 +499,14 @@
                 this.device?.Release();
             }
 
-            if (this.selfPointer != IntPtr.Zero)
+            if (this.selfPointer.IsInvalid)
             {
-                if (!User32.UnregisterClass(this.title, this.selfPointer))
+                if (!PInvoke.UnregisterClass(this.title, this.selfPointer))
                 {
                     throw new Exception($"Failed to Unregister {this.title} class during dispose.");
                 }
 
-                this.selfPointer = IntPtr.Zero;
+                this.selfPointer.ReleaseHandle();
             }
 
             this._disposedValue = true;
@@ -620,13 +623,13 @@
                 new[] { FeatureLevel.Level_10_0 },
                 out this.device,
                 out this.deviceContext);
-            this.selfPointer = Kernel32.GetModuleHandle(null);
+            this.selfPointer = PInvoke.GetModuleHandle(string.Empty);
             this.wndClass = new WNDCLASSEX
             {
                 Size = Unsafe.SizeOf<WNDCLASSEX>(),
                 Styles = WindowClassStyles.CS_HREDRAW | WindowClassStyles.CS_VREDRAW | WindowClassStyles.CS_PARENTDC,
                 WindowProc = WndProc,
-                InstanceHandle = this.selfPointer,
+                InstanceHandle = this.selfPointer.DangerousGetHandle(),
                 CursorHandle = User32.LoadCursor(IntPtr.Zero, SystemCursor.IDC_ARROW),
                 BackgroundBrushHandle = IntPtr.Zero,
                 IconHandle = IntPtr.Zero,
