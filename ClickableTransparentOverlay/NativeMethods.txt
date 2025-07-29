@@ -1,7 +1,6 @@
 
 // Dwmapi
 DwmExtendFrameIntoClientArea
-Margins
 
 // kernel32
 GetModuleHandle

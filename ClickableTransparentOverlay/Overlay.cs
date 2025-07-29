@@ -28,8 +28,8 @@
     {
         private readonly string title;
         private readonly Format format;
-        private readonly int initialWindowWidth;
-        private readonly int initialWindowHeight;
+        private readonly uint initialWindowWidth;
+        private readonly uint initialWindowHeight;
 
         private WNDCLASSEX wndClass;
 
@@ -109,7 +109,7 @@
         /// <param name="windowHeight">
         /// height to use when creating the clickable transparent overlay window
         /// </param>
-        public Overlay(int windowWidth, int windowHeight) : this("Overlay", windowWidth, windowHeight)
+        public Overlay(uint windowWidth, uint windowHeight) : this("Overlay", windowWidth, windowHeight)
         {
         }
 
@@ -125,7 +125,7 @@
         /// <param name="windowHeight">
         /// height to use when creating the clickable transparent overlay window
         /// </param>
-        public Overlay(string windowTitle, int windowWidth, int windowHeight) : this(windowTitle, false, windowWidth, windowHeight)
+        public Overlay(string windowTitle, uint windowWidth, uint windowHeight) : this(windowTitle, false, windowWidth, windowHeight)
         {
         }
 
@@ -147,7 +147,7 @@
         /// <param name="windowHeight">
         /// height to use when creating the clickable transparent overlay window
         /// </param>
-        public Overlay(string windowTitle, bool DPIAware, int windowWidth, int windowHeight)
+        public Overlay(string windowTitle, bool DPIAware, uint windowWidth, uint windowHeight)
         {
             this.initialWindowWidth = windowWidth;
             this.initialWindowHeight = windowHeight;
@@ -575,7 +575,7 @@
             }
         }
 
-        private void OnResize(int width, int height)
+        private void OnResize(uint width, uint height)
         {
             if (renderView == null)//first show
             {
