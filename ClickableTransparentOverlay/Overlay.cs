@@ -644,8 +644,8 @@
 
             this.window = new Win32Window(
                 wndClass.ClassName,
-                this.initialWindowWidth,
-                this.initialWindowHeight,
+                (int)this.initialWindowWidth,
+                (int)this.initialWindowHeight,
                 0,
                 0,
                 this.title,
@@ -664,7 +664,7 @@
             switch (msg)
             {
                 case WindowMessage.ShowWindow:
-                    this.OnResize(this.window.Dimensions.Width, this.window.Dimensions.Height);
+                    this.OnResize((uint)this.window.Dimensions.Width, (uint)this.window.Dimensions.Height);
                     break;
                 case WindowMessage.Size:
                     switch ((SizeMessage)wParam)
@@ -672,7 +672,7 @@
                         case SizeMessage.SIZE_RESTORED:
                         case SizeMessage.SIZE_MAXIMIZED:
                             var lp = (int)lParam;
-                            this.OnResize(Utils.Loword(lp), Utils.Hiword(lp));
+                            this.OnResize((uint)Utils.Loword(lp), (uint)Utils.Hiword(lp));
                             break;
                         default:
                             break;
