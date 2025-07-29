@@ -1,0 +1,33 @@
+
+// Dwmapi
+DwmExtendFrameIntoClientArea
+Margins
+
+// kernel32
+GetModuleHandle
+WNDCLASSEXW
+RegisterClassEx
+UnregisterClass
+DefWindowProc
+LoadCursor
+PeekMessageW
+DispatchMessage
+GetWindowLong
+SetWindowLong
+CreateWindowEx
+DestroyWindow
+ShowWindow
+SetCursor
+ScreenToClient
+GetCursorPos
+GetKeyState
+SetFocus
+MoveWindow
+GetSystemMetrics
+
+
+
+
+// winmm
+timeBeginPeriod
+timeEndPeriod
