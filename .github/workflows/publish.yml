@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master # Default release branch, may also be named 'master' or 'develop'
+  workflow_dispatch:
+    # allow manual trigger
+    
 jobs:
   windows_latest:
     name: build, pack & publish
